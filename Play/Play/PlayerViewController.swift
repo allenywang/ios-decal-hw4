@@ -27,6 +27,8 @@ class PlayerViewController: UIViewController {
     var didPlay: [Track]!
 
     var paused = true
+    
+    var curUrl: URL!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -135,7 +137,17 @@ class PlayerViewController: UIViewController {
         let track = tracks[currentIndex]
         let url = URL(string: "https://api.soundcloud.com/tracks/\(track.id as Int)/stream?client_id=\(clientID)")!
         // FILL ME IN
-
+        
+        if url != curUrl {
+            curUrl = url
+            player = AVQueuePlayer(playerItem: AVPlayerItem(url: url))
+        }
+        sender.isSelected = !sender.isSelected
+        if sender.isSelected {
+            player.play()
+        } else {
+            player.pause()
+        }
     }
 
     /*
@@ -146,6 +158,14 @@ class PlayerViewController: UIViewController {
      */
     func nextTrackTapped(_ sender: UIButton) {
         // FILL ME IN
+        if tracks.count - 1 > currentIndex {
+            currentIndex = currentIndex + 1
+            loadTrackElements()
+            playOrPauseTrack(playPauseButton)
+            if !playPauseButton.isSelected {
+                playOrPauseTrack(playPauseButton)
+            }
+        }
     }
 
     /*
@@ -160,6 +180,16 @@ class PlayerViewController: UIViewController {
 
     func previousTrackTapped(_ sender: UIButton) {
         // FILL ME IN
+        if player.currentTime().seconds > 3 {
+            player.seek(to: CMTime(seconds: 0.0, preferredTimescale: 1))
+        } else if currentIndex > 0 {
+            currentIndex = currentIndex - 1
+            loadTrackElements()
+            playOrPauseTrack(playPauseButton)
+            if !playPauseButton.isSelected {
+                playOrPauseTrack(playPauseButton)
+            }
+        }
     }
 
 
